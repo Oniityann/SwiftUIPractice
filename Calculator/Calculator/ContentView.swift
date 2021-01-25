@@ -9,6 +9,8 @@ import SwiftUI
 
 struct ContentView: View {
   let scale = UIScreen.main.bounds.width / 414.0
+  @State var output = "0"
+  
   var body: some View {
     ZStack {
       Color.black.edgesIgnoringSafeArea(.all)
@@ -16,7 +18,7 @@ struct ContentView: View {
       VStack(spacing: 12.0) {
         Spacer()
         
-        Text("0")
+        Text(output)
           .font(.system(size: 76.0))
           .bold()
           .foregroundColor(.white)
@@ -25,7 +27,7 @@ struct ContentView: View {
           .padding(.horizontal)
           
         
-        CalculatorButtonPad()
+        CalculatorButtonPad(output: $output)
           .padding(.horizontal)
           .padding(.bottom, 32)
       }
@@ -37,7 +39,6 @@ struct ContentView: View {
 struct ContentView_Previews: PreviewProvider {
   static var previews: some View {
     ContentView()
-    ContentView().previewDevice("iPhone SE (2nd generation)")
   }
 }
 
@@ -49,9 +50,7 @@ struct CalculatorButton: View {
   let backgroundColorName: String
   let action: () -> Void
   var body: some View {
-    Button(action: {
-      
-    }) {
+    Button(action: action) {
       Text(title)
         .font(.title)
         .bold()
@@ -64,6 +63,7 @@ struct CalculatorButton: View {
 }
 
 struct CalculatorButtonRow: View {
+  @Binding var output: String
   let row: [CalculatorButtonItem]
   
   var body: some View {
@@ -75,7 +75,7 @@ struct CalculatorButtonRow: View {
           textColorName: item.textColorName,
           backgroundColorName: item.backgroundColorName)
         {
-          print("Button: \(item.title)")
+          output = "Button: \(item.title)"
         }
       }
     }
@@ -83,6 +83,7 @@ struct CalculatorButtonRow: View {
 }
 
 struct CalculatorButtonPad: View {
+  @Binding var output: String
   let pad: [[CalculatorButtonItem]] = [
     [.command(.clear), .command(.flip), .command(.percent), .op(.divid)],
     [.digit(7), .digit(8), .digit(9), .op(.multiply)],
@@ -94,7 +95,7 @@ struct CalculatorButtonPad: View {
   var body: some View {
     VStack(spacing: 8.0) {
       ForEach(pad, id: \.self) { row in
-        CalculatorButtonRow(row: row)
+        CalculatorButtonRow(output: $output, row: row)
       }
     }
   }
