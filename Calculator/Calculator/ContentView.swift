@@ -10,6 +10,7 @@ import SwiftUI
 struct ContentView: View {
   let scale = UIScreen.main.bounds.width / 414.0
   @State var output = "0"
+  @State private var brain: CalculatorBrain = .left("0")
   
   var body: some View {
     ZStack {
@@ -18,16 +19,16 @@ struct ContentView: View {
       VStack(spacing: 12.0) {
         Spacer()
         
-        Text(output)
+        Text(brain.output)
           .font(.system(size: 76.0))
           .bold()
+          .minimumScaleFactor(0.5)
           .foregroundColor(.white)
           .multilineTextAlignment(.trailing)
           .frame(maxWidth: .infinity, alignment: .trailing)
           .padding(.horizontal)
-          
         
-        CalculatorButtonPad(output: $output)
+        CalculatorButtonPad(brain: $brain)
           .padding(.horizontal)
           .padding(.bottom, 32)
       }
@@ -63,7 +64,7 @@ struct CalculatorButton: View {
 }
 
 struct CalculatorButtonRow: View {
-  @Binding var output: String
+  @Binding var brain: CalculatorBrain
   let row: [CalculatorButtonItem]
   
   var body: some View {
@@ -75,7 +76,7 @@ struct CalculatorButtonRow: View {
           textColorName: item.textColorName,
           backgroundColorName: item.backgroundColorName)
         {
-          output = "Button: \(item.title)"
+          brain = brain.apply(item: item)
         }
       }
     }
@@ -83,9 +84,9 @@ struct CalculatorButtonRow: View {
 }
 
 struct CalculatorButtonPad: View {
-  @Binding var output: String
+  @Binding var brain: CalculatorBrain
   let pad: [[CalculatorButtonItem]] = [
-    [.command(.clear), .command(.flip), .command(.percent), .op(.divid)],
+    [.command(.clear), .command(.flip), .command(.percent), .op(.divide)],
     [.digit(7), .digit(8), .digit(9), .op(.multiply)],
     [.digit(4), .digit(5), .digit(6), .op(.minus)],
     [.digit(1), .digit(2), .digit(3), .op(.plus)],
@@ -95,7 +96,7 @@ struct CalculatorButtonPad: View {
   var body: some View {
     VStack(spacing: 8.0) {
       ForEach(pad, id: \.self) { row in
-        CalculatorButtonRow(output: $output, row: row)
+        CalculatorButtonRow(brain: $brain, row: row)
       }
     }
   }

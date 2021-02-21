@@ -11,7 +11,7 @@ enum CalculatorButtonItem: Hashable {
   enum Op: String {
     case plus = "+"
     case minus = "-"
-    case divid = "÷"
+    case divide = "÷"
     case multiply = "×"
     case equal = "="
   }
